@@ -38,25 +38,36 @@
                 text-align: center;
                 font-weight: bold;
             }
-            table{
+            
+            /* MODIFIKASI: Style untuk pesan error umur */
+            .error-message {
+                background-color: #f8d7da;
+                color: #721c24;
+                padding: 15px;
+                margin-bottom: 20px;
+                border: 1px solid #f5c6cb;
+                border-radius: 5px;
+                text-align: center;
+                font-weight: bold;
+            }
+
+            /* MODIFIKASI: Style untuk tabel data baru */
+            .data-table {
                 width: 100%;
                 border-collapse: collapse;
+                margin-top: 20px;
                 margin-bottom: 20px;
             }
-            th, td{
-                padding: 12px;
-                text-align: left;
-                border-bottom: 1px solid #ddd;
+            .data-table th, .data-table td {
+                border: 1px solid #ddd;
+                padding: 8px;
+                text-align: center;
             }
-            th{
-                background-color: #f8f9fa;
-                font-weight: bold;
+            .data-table th {
+                background-color: #f2f2f2;
                 color: #333;
-                width: 30%;
             }
-            td{
-                color: #666;
-            }
+
             .back-button{
                 text-align: center;
                 margin-top: 20px;
@@ -80,13 +91,71 @@
             <h1>Data Registrasi User</h1>
             
             <?php if (isset($_POST['submit'])): ?>
-                <div class="success-message">
-                    Registrasi Berhasil!
-                </div>
+                <?php
+                    // Ambil semua data dari POST
+                    $nama_depan = htmlspecialchars($_POST['nama_depan']);
+                    $nama_belakang = htmlspecialchars($_POST['nama_belakang']);
+                    // PERSYARATAN #1: Ambil umur dan ubah ke integer
+                    $umur = (int)$_POST['umur']; 
+                    $asal_kota = htmlspecialchars($_POST['asal_kota']);
+                    
+                    // PERSYARATAN #2: Gabungkan nama depan dan belakang
+                    $nama_lengkap = $nama_depan . " " . $nama_belakang;
+                ?>
+
+                <?php if ($umur < 10): ?>
+                    <div class="error-message">
+                        Error: Umur minimal adalah 10 tahun!
+                    </div>
+                <?php else: ?>
+                    <div class="success-message">
+                        Registrasi Berhasil!
+                    </div>
+
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>No</th>
+                                <th>Nama Lengkap</th>
+                                <th>Umur</th>
+                                <th>Asal Kota</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <?php
+                                $jumlah_baris = 0; // Counter untuk jumlah baris
+                                $nomor = 1;        // Counter untuk kolom "No"
+                                
+                                // PERSYARATAN #3: Looping sebanyak $umur
+                                while ($jumlah_baris < $umur) {
+                                    
+                                    // PERSYARATAN #5: Skip no 7 dan 13
+                                    if ($nomor == 7 || $nomor == 13) {
+                                        $nomor += 2; // Lompat ke angka ganjil berikutnya
+                                        continue;   // Ulangi loop (tanpa mencetak baris & tanpa menambah $jumlah_baris)
+                                    }
+
+                                    // Cetak baris tabel
+                                    echo "<tr>";
+                                    echo "<td>" . $nomor . "</td>";
+                                    echo "<td>" . $nama_lengkap . "</td>";
+                                    echo "<td>" . $umur . "</td>";
+                                    echo "<td>" . $asal_kota . "</td>";
+                                    echo "</tr>";
+
+                                    // Increment kedua counter
+                                    $nomor += 2; // PERSYARATAN #4: Selalu ganjil
+                                    $jumlah_baris++; // Menandakan 1 baris telah dicetak
+                                }
+                            ?>
+                        </tbody>
+                    </table>
+                <?php endif; ?>
                 
                 <div class="back-button">
                     <a href="index.html">Kembali ke Form Registrasi</a>
                 </div>
+
             <?php else: ?>
                 <div style="text-align: center; color: #dc3545; padding: 20px;">
                     <h3>Error: Data tidak ditemukan</h3>
